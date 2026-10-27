@@ -8,6 +8,8 @@
   "devDependencies": {
     "markdownlint-cli2": "^0.24.0",
     "textlint": "^15.8.0",
+    "textlint-rule-common-misspellings": "^1.0.1",
+    "textlint-rule-sentence-length": "^5.2.1",
     "textlint-rule-write-good": "^2.0.0"
   }
 }
