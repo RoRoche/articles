@@ -1,0 +1,15 @@
+repos:
+  - repo: local
+    hooks:
+      - id: textlint
+        name: Validate prose with textlint
+        entry: npm run lint:prose
+        language: system
+        files: \.md$
+        pass_filenames: false
+      - id: markdownlint
+        name: Validate Markdown
+        entry: npm run lint:markdown
+        language: system
+        files: \.md$
+        pass_filenames: false
