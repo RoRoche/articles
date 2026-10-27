@@ -5,6 +5,10 @@
       "passive": false,
       "tooWordy": false,
       "weasel": false
-    }
+    },
+    "sentence-length": {
+      "max": 200
+    },
+    "common-misspellings": true
   }
 }
