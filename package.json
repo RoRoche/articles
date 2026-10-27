@@ -1,0 +1,13 @@
+{
+  "private": true,
+  "scripts": {
+    "lint": "npm run lint:prose && npm run lint:markdown",
+    "lint:markdown": "markdownlint-cli2 \"**/*.md\"",
+    "lint:prose": "textlint \"**/*.md\""
+  },
+  "devDependencies": {
+    "markdownlint-cli2": "^0.24.0",
+    "textlint": "^15.8.0",
+    "textlint-rule-write-good": "^2.0.0"
+  }
+}
