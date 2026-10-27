@@ -3,13 +3,11 @@ repos:
     hooks:
       - id: textlint
         name: Validate prose with textlint
-        entry: npm run lint:prose
+        entry: ./node_modules/.bin/textlint
         language: system
         files: \.md$
-        pass_filenames: false
       - id: markdownlint
         name: Validate Markdown
-        entry: npm run lint:markdown
+        entry: ./node_modules/.bin/markdownlint-cli2
         language: system
         files: \.md$
-        pass_filenames: false
