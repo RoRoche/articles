@@ -1,5 +1,8 @@
 # Articles
 
+[![Lint](https://github.com/RoRoche/articles/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/RoRoche/articles/actions/workflows/lint.yml)
+![We recommend IntelliJ IDEA](https://www.elegantobjects.org/intellij-idea.svg)
+
 This repository contains long-form technical articles and the tooling used to
 validate them.
 
