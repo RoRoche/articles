@@ -39,6 +39,9 @@ Run both validators:
 npm run lint
 ```
 
+The prose checks flag common English misspellings and limit sentences to 200
+characters.
+
 Or run them separately:
 
 ```sh
