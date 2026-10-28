@@ -242,6 +242,8 @@ The response would look something like this, with illustrative prices for IT boo
 
 This gives the API representation a clear place to evolve. A different response format can be introduced without changing `Cart`. The mapping responsibility still exists; it now belongs to an object that produces the representation directly.
 
+There is an even stricter way to protect encapsulation: pass the result of `Json.createObjectBuilder()` to a `mapToJson` method on `Item` and `Cart` (implemented, for example, by `PgCart`). Each object would then choose which parts of its internal state to expose, rather than letting `JsonItem` and `JsonCart` inspect it through accessors. The trade-off is that JSON mapping becomes an additional responsibility in the business interfaces, and those interfaces must now depend on the JSON API. That may be worthwhile when keeping representation decisions with the objects that own the state matters more than keeping the domain contracts independent of serialization.
+
 A DTO remains useful when an explicit snapshot is required. In this example, `items()` and `total()` are separate reads, so concurrent changes could produce an inconsistent response. A DTO alone does not solve that problem; the implementation needs a consistent read strategy or snapshot if the API promises that both describe the same instant.
 
 ## Use names to communicate responsibility
