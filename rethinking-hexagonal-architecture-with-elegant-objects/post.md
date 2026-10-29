@@ -19,7 +19,7 @@ One common implementation keeps the dependency directions of hexagonal architect
 
 Reading [Elegant Objects](https://www.elegantobjects.org/) challenged how I approached this design. Its emphasis on encapsulation, composition, and small objects led me to ask: **what changes when domain objects own more of the behavior that depends on their state?**
 
-I will explore that question through an e-commerce cart. The examples are deliberately small: supporting types and repetitive delegation methods are omitted. This is a design experiment inspired by Elegant Objects, not a claim that every rule from the book fits every application.
+I will explore that question through an e-commerce cart. The examples are deliberately small: supporting types and repetitive delegation methods are omitted.
 
 ## Start with the responsibility
 
@@ -65,17 +65,17 @@ public interface Cart {
 }
 ```
 
-This is a sketch, not a complete implementation: the examples below omit methods such as `remove()` and `checkout()`, along with error handling and transaction boundaries. Those omissions matter because they hide some of the hardest design decisions.
+The examples below omit repetitive methods such as `remove()` and `checkout()`, along with error handling and transaction boundaries.
 
 The caller asks the cart to perform an operation. It does not retrieve a mutable list, modify it, and ask a repository to save the result. This gives the cart a boundary for rules about its contents.
 
 The distinction goes beyond method names. Renaming `getTotal()` to `total()` changes little if the calculation still lives elsewhere. What matters is that the cart owns the meaning of its total and hides how it is obtained.
 
-This example still exposes values through `sku()` and `price()`. It is a pragmatic interpretation of Elegant Objects, with an emphasis on responsibility and controlled exposure of state.
+The contract exposes the values needed by callers through `sku()` and `price()`, while keeping cart operations behind its own boundary.
 
-The model also makes an assumption: each item represents one cart entry. Quantities, discounts, and price changes would require more explicit concepts, such as a `CartLine`. A useful contract should reflect the business we need to support.
+Each item represents one cart entry. Quantities, discounts, and price changes belong in explicit concepts such as a `CartLine`.
 
-`checkout()` is a design choice, not a rule that checkout belongs to a cart. The method makes the cart responsible for coordinating payment and order creation, which may be too much. If checkout coordinates several objects or external systems, an application service is often a clearer owner of the workflow. The cart can still enforce rules about its own contents.
+`checkout()` makes the cart responsible for coordinating payment and order creation. An application service can coordinate the wider workflow, while the cart owns rules about its contents.
 
 ## Keep persistence behind the contract
 
@@ -110,9 +110,17 @@ This implementation removes the need for a separate persistence entity and its m
 
 One important distinction: its fields are final, but the cart's observable state can change. Adding an item changes the database, and a later call may return different contents. Fixed references do not make a persistent object an immutable value, nor do they guarantee thread safety.
 
-The `Cart` contract knows nothing about SQL or `DataSource`, and `PgCart` depends on that contract. In this sketch, `Cart` is an internal domain abstraction; it is not automatically a hexagonal application port. `PgCart` acts as an infrastructure adapter, but also contains domain behavior. The dependency points inward, while the separation between domain logic and persistence is intentionally weaker.
+The `Cart` contract knows nothing about SQL or `DataSource`, and `PgCart` depends on that contract. `Cart` is a domain abstraction, not an application port. `PgCart` is both a secondary adapter and a domain object: the dependency points inward, but domain behavior and persistence are deliberately combined.
 
-For a more complex domain, I may prefer a domain object that collaborates with a separate persistence abstraction. That adds indirection, but can help when domain behavior and persistence need to evolve or be tested independently. The right boundary depends on whether that separation makes the design easier to understand.
+The hexagon remains at the system boundary: `TkCart` translates HTTP requests, and `PgCart` connects the cart to PostgreSQL. Inside that boundary, this design keeps the domain abstraction and persistence behavior together rather than introducing a separate persistence port.
+
+The roles in this example are:
+
+- `TkCart` is the primary HTTP adapter.
+- `JsonCart` defines the JSON representation.
+- `Cart`, `NonEmptyCart`, and `LoggedCart` form the domain contract and its decorators.
+- `PgCart` is both the secondary PostgreSQL adapter and a domain object.
+- `FakeCart` is a test implementation of `Cart`.
 
 ## Compose behavior around the object
 
@@ -151,11 +159,11 @@ new LoggedCart(
 )
 ```
 
-The composition shows which responsibilities apply: persistent storage, an empty-cart check, and logging. Each wrapper depends on `Cart`, so its behavior can be tested with a small fake implementation, such as `FkCart`.
+The composition shows which responsibilities apply: persistent storage, an empty-cart check, and logging. Each wrapper depends on `Cart`, so its behavior can be tested with a small fake implementation such as `FakeCart`.
 
-Order matters. In this arrangement, logging surrounds the validation and can record rejected checkout attempts as well as successful ones.
+Order matters: logging surrounds validation and records rejected checkout attempts as well as successful ones.
 
-Composition also has limits. The empty-cart check and checkout are separate calls; another request could modify the cart between them. The checkout implementation must enforce the invariant atomically with the relevant database changes. The decorator illustrates where a rule can be expressed, but cannot guarantee consistency on its own.
+The empty-cart check and checkout are separate calls, so another request could modify the cart between them. `PgCart` must enforce the invariant atomically with the relevant database changes.
 
 A real checkout must also account for payment failures and retries. A database transaction cannot atomically include an external payment provider. Moving behavior into objects makes these responsibilities easier to locate, but does not remove them.
 
@@ -205,28 +213,35 @@ public final class JsonCart implements RsJSON.Source {
 
 `JsonCart` owns the response structure. It wraps a cart instead of copying its values into a second model before serialization. Formatting money as a string keeps this example short; a public API may need separate amount and currency fields.
 
-The HTTP entry point can then focus on returning the representation:
+The HTTP entry point wires the same decorators around the persistent cart before returning the representation:
 
 ```java
 public final class TkCart implements Take {
     private final DataSource db;
+    private final Logger log;
 
-    public TkCart(final DataSource db) {
+    public TkCart(final DataSource db, final Logger log) {
         this.db = db;
+        this.log = log;
     }
 
     @Override
     public Response act(final Request req) throws Exception {
         return new RsJSON(
             new JsonCart(
-                new PgCart(this.db, new UserOf(req))
+                new LoggedCart(
+                    new NonEmptyCart(
+                        new PgCart(this.db, new UserOf(req).id())
+                    ),
+                    this.log
+                )
             )
         );
     }
 }
 ```
 
-`TkCart` receives the shared database dependency when it is constructed. For each request, it builds a `PgCart` for the user identified by `UserOf(req)`, then wraps it in the JSON representation. The HTTP adapter therefore connects request-specific identity, the cart implementation, and the response without making the domain contract depend on HTTP.
+`TkCart` receives the shared database connection and logger when it is constructed. For each request, it extracts the user's id, builds the same `LoggedCart(NonEmptyCart(PgCart(...)))` composition, and wraps it in the JSON representation. The HTTP adapter connects request identity, cart behavior, and response without making the domain contract depend on HTTP.
 
 The response would look something like this, with illustrative prices for IT books about Elegant Objects and hexagonal architecture:
 
@@ -242,7 +257,7 @@ The response would look something like this, with illustrative prices for IT boo
 
 This gives the API representation a clear place to evolve. A different response format can be introduced without changing `Cart`. The mapping responsibility still exists; it now belongs to an object that produces the representation directly.
 
-There is an even stricter way to protect encapsulation: pass the result of `Json.createObjectBuilder()` to a `mapToJson` method on `Item` and `Cart` (implemented, for example, by `PgCart`). Each object would then choose which parts of its internal state to expose, rather than letting `JsonItem` and `JsonCart` inspect it through accessors. The trade-off is that JSON mapping becomes an additional responsibility in the business interfaces, and those interfaces must now depend on the JSON API. That may be worthwhile when keeping representation decisions with the objects that own the state matters more than keeping the domain contracts independent of serialization.
+An alternative is to pass the result of `Json.createObjectBuilder()` to a `mapToJson` method on `Item` and `Cart`. Each object would then choose which parts of its state to expose, at the cost of coupling business interfaces to the JSON API. Here, `JsonItem` and `JsonCart` keep that representation responsibility outside the domain contract.
 
 A DTO remains useful when an explicit snapshot is required. In this example, `items()` and `total()` are separate reads, so concurrent changes could produce an inconsistent response. A DTO alone does not solve that problem; the implementation needs a consistent read strategy or snapshot if the API promises that both describe the same instant.
 
@@ -250,11 +265,11 @@ A DTO remains useful when an explicit snapshot is required. In this example, `it
 
 Some naming rules of thumb I now follow:
 
-- **Prefer names that say what an object is.** Names ending in `-er`, such as `Controller`, `Mapper`, `Manager`, or `Handler`, describe what an object does to others. They can point to a procedure organized around someone else's data. I look for the underlying concept instead. Examples include `Payment`, `Outbox`, and `Cart`. This is a prompt for design review, not a ban: the name alone cannot tell us whether an abstraction is appropriate.
-- **Use technology prefixes to distinguish implementations.** `PgCart` identifies the PostgreSQL implementation. `TkCart` and `RsJSON` identify framework-facing objects, and a name such as `CardPayment` can identify a bank-card payment implementation. Prefixes like `Pg`, `Tk`, `Fk`, and `Rs` help only when the team shares their meaning.
+- **Prefer names that say what an object is.** Names ending in `-er`, such as `Controller`, `Mapper`, `Manager`, or `Handler`, describe what an object does to others. They point toward procedures organized around someone else's data. Prefer the underlying concept: `Payment`, `Outbox`, or `Cart`.
+- **Use technology prefixes to distinguish implementations.** `PgCart` identifies the PostgreSQL implementation; `TkCart` and `RsJSON` identify framework-facing objects. `StripePayment` is clearer than `CardPayment` when naming an implementation tied to a payment provider. In a codebase using Takes, `Fk` already means Fork (`FkRegex`, `FkTypes`), while Takes calls its test doubles `RqFake` and `RsFake`; `FakeCart` avoids giving one prefix two meanings. Prefixes help only when the team shares their meaning.
 - **Use adjectives to describe decorators.** `NonEmptyCart` and `LoggedCart` make added behavior visible; `CachedItems` would communicate the same idea for a cached collection.
 
-The other names in this example follow the same intent: `Cart` defines the business contract, `JsonCart` identifies an API representation, and `FkCart` provides a test implementation. The goal is not to enforce a naming formula, but to help readers see the concept and responsibility at a glance.
+The other names in this example follow the same intent: `Cart` defines the business contract, `JsonCart` identifies an API representation, and `FakeCart` provides a test implementation.
 
 ## Evaluate the trade-offs
 
@@ -266,10 +281,11 @@ Several constraints deserve attention:
 
 - **Data access:** small objects can hide repeated queries. Measure query behavior and choose batching or a deliberate loading strategy. Caching requires a clear lifetime and invalidation policy.
 - **Consistency:** composition does not define transaction boundaries. Business invariants must hold under concurrent access and partial failure.
+- **Testability:** `FakeCart` lets tests exercise decorators such as `NonEmptyCart` without infrastructure. `PgCart` owns database-backed behavior, including `total()`, so tests of those rules require PostgreSQL. This design makes some behavior easy to test in isolation; it does not make the persistent cart infrastructure-free.
 - **Framework integration:** frameworks built around mutable entities, reflection, and generated mappings may make this approach costly to introduce.
 - **Navigation:** many small objects can reduce local complexity while making the overall behavior harder to follow. Shared conventions and selective decomposition matter.
 
-For an existing application, I would start with one bounded behavior and assess the result. Can the team locate the rule more easily? Can it test the behavior without infrastructure? Are the dependencies clearer? Those answers provide better guidance than adherence to a naming rule or a target class count.
+For an existing application, start with one bounded behavior and assess the result: can the team locate the rule more easily, test the right boundary, and understand the dependencies? Those answers provide better guidance than adherence to a naming rule or a target class count.
 
 ## Bring the question back to your code
 
