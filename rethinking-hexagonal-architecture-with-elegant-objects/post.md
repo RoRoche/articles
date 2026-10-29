@@ -1,12 +1,11 @@
 ---
 title: "Rethinking Hexagonal Architecture with Elegant Objects"
 description: "Exploring object composition and cohesive design."
-tags:
-  - java
-  - software-architecture
-  - hexagonal-architecture
-  - elegant-objects
+tags: [java, software-architecture, hexagonal-architecture, elegant-objects]
 status: draft
+category: architecture
+slug: rethinking-hexagonal-architecture-with-elegant-objects
+image: header.png
 published_at: null
 medium_url: null
 ---
