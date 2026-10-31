@@ -7,7 +7,8 @@ category: architecture
 slug: rethinking-hexagonal-architecture-with-elegant-objects
 image: header.png
 published_at: "2026.10.31"
-medium_url: null
+dev_to_url: https://dev.to/roroche/rethinking-hexagonal-architecture-with-elegant-objects-278j
+medium_com_url: https://medium.com/@romain.rochegude/rethinking-hexagonal-architecture-with-elegant-objects-romain-rochegude-af3511febdb5
 ---
 
 Hexagonal architecture provides a useful foundation: business behavior should remain independent of the technologies used to expose it or persist its state. Ports define the interactions; adapters connect them to the outside world.
