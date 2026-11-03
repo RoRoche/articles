@@ -174,6 +174,14 @@ Keep changes small, explain their intent, and make review a team responsibility.
 Use pairing when a discussion is becoming a long exchange of comments.
 Automate formatting so people can focus on behavior and risk.
 
+A recurring review comment is worth examining: can we turn an agreed convention into an executable check?
+With [ArchUnit](https://www.archunit.org/userguide/html/000_Index.html#_package_dependency_checks), for example, a Java team can check that domain packages do not depend on infrastructure packages.
+The diagram explains the intended boundary; the architecture test detects when a change crosses it.
+
+The agreement must come first.
+A design preference does not become universal merely because we can encode it in a tool.
+Reviewers still need to discuss whether an abstraction fits the domain, whether a trade-off is acceptable, and whether a rule itself should change.
+
 The tech lead's contribution is to make reasoning visible and develop others' judgment. Becoming everyone's mandatory checkpoint limits that impact.
 
 ## Build a pipeline that earns trust
@@ -202,6 +210,37 @@ Script deployment so success does not depend on someone remembering a sequence o
 Continuous delivery means keeping software deployable.
 Continuous deployment goes further by automatically deploying changes that pass the required checks.
 A team can benefit from the former while retaining a release decision.
+
+### Design quality gates developers can trust
+
+A quality gate combines checks into an explicit decision about whether a change can proceed.
+Its purpose is to protect the team's attention by catching known problems consistently.
+Each check should answer a clear question and help the developer act when it fails.
+
+"Quality gate failed" gives us another problem to investigate.
+A useful failure identifies the affected file or class, the violated rule, why it matters, and how to reproduce the check.
+For a dependency boundary, name both classes and show the forbidden dependency.
+For a failed assertion, report the expected and actual behavior.
+
+Provide a documented entry point, such as `make check` or `mvn verify`, for running the relevant checks locally with consistent tool versions.
+Keep environment-specific checks explicit.
+Developers should know what they can verify before pushing and what requires the CI environment.
+Run cheap, useful checks first and parallelize independent checks when resources allow it.
+
+Decide deliberately which findings block progress:
+
+- **Block on understood, reliable checks:** compilation failures, failing behavior tests, or a violation of an agreed architecture boundary.
+- **Start new or uncertain signals in informative mode:** an experimental rule or an uncalibrated performance threshold needs observation before it can justify blocking delivery.
+- **Record exceptions:** capture the reason, an owner, and a review or expiry date, so a temporary compromise stays visible.
+
+On an existing codebase, assess historical violations before enforcing a new rule.
+Fix them or establish an explicit baseline, then prevent new violations while reducing the backlog incrementally.
+A useful improvement should not require an unrelated feature to absorb the entire cleanup cost.
+
+Treat the gate as an internal product with developers as its users.
+Give its rules owners, inspect duration and false positives, and fix intermittent failures.
+If a check repeatedly wastes attention, improve or replace it.
+A permanently red pipeline eventually loses its meaning.
 
 ### Make releases repeatable with ChatOps and Rultor
 
@@ -248,6 +287,37 @@ Tests cannot predict every interaction with real traffic, data, and external ser
 
 A successful deployment is a technical event.
 Whether users benefit from the change is a separate question that requires product feedback.
+
+## Remove the small frictions that accumulate
+
+Rework is not the only hidden cost.
+Searching for a command, reconstructing test setup, or deciphering a silent CI job also consumes attention.
+These irritations can become so familiar that the team stops questioning them.
+
+Consider an illustrative calculation: two minutes lost, ten times a day, across ten developers and 220 working days amounts to about **733 hours a year**.
+That is arithmetic based on assumed repetition, not measured savings or capacity we can automatically recover.
+It is a reason to investigate frequent small costs alongside spectacular bottlenecks.
+
+The first fix may be simple: use an existing test fixture, give a build command an obvious name, or improve an assertion's failure message.
+If every test repeats the same setup and comparison logic, a focused helper can make the next hundred tests easier to write and diagnose.
+Check what the standard tools already provide before introducing another abstraction.
+
+Some improvements make work more understandable without making execution faster.
+A long-running test that reports progress is easier to distinguish from a hung process.
+Preserving the relevant diagnostic artifacts after a failure can save the next person from rerunning the entire investigation.
+
+The same principle applies to knowledge.
+When a release requires one particular colleague, that person has become a dependency in the delivery process.
+Encode repeatable steps in versioned commands and explain their intent in documentation, so colleagues can learn without needing a permanent intermediary.
+ChatOps and reproducible release environments address this problem at the publication boundary.
+
+Keep a small friction backlog: what recurs, how often, who encounters it, and what is the smallest useful fix?
+Compare the cost of implementing and maintaining the fix with its likely reuse.
+Observe whether it actually helps before expanding it.
+
+This also sets a boundary for automation.
+Understanding a domain rule or debating a consequential design decision takes effort that produces learning.
+Repeating a mechanical procedure rarely does. Removing that repetition gives the team more attention for the work that needs judgment.
 
 ## Manage technical debt through its consequences
 
