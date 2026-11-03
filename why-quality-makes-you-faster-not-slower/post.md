@@ -203,6 +203,46 @@ Continuous delivery means keeping software deployable.
 Continuous deployment goes further by automatically deploying changes that pass the required checks.
 A team can benefit from the former while retaining a release decision.
 
+### Make releases repeatable with ChatOps and Rultor
+
+A release script still depends on a developer's machine if it uses their local JDK, cached dependencies, working tree, and undeclared configuration.
+Automating the commands is one step; controlling the environment makes the process repeatable.
+
+**ChatOps brings operational commands into the project's conversation**, where the request, execution, and result are visible to the team.
+[Rultor](https://www.rultor.com/) applies this approach to merge, release, and deployment operations through GitHub comments.
+For example, an authorized collaborator can request a release with:
+
+```text
+@rultor release, tag is `1.4.0`
+```
+
+Rultor executes the workflow defined in the repository's `.rultor.yml`.
+Its [Docker configuration](https://doc.rultor.com/reference.html#docker-image) defines the build environment, keeping execution separate from a developer's laptop.
+The release starts in a fresh, isolated container, with the required toolchain and explicitly supplied configuration.
+The environment is disposable: leftover files from a previous local build should never be an undeclared input to publication.
+
+For my Java libraries, the intended flow is concrete:
+
+1. Check out the source state selected for release.
+2. Prepare the requested version through the versioned release script.
+3. Build and run the required quality checks in the isolated environment.
+4. Sign and publish the resulting artifacts to Maven Central using explicitly supplied credentials.
+5. Have Rultor tag the resulting release commit and push the tag after the script succeeds.
+
+Rultor's [release documentation](https://doc.rultor.com/basics.html#release) describes this division of responsibilities between the project's script and the bot.
+Publishing a library and deploying an application are distinct operations; Rultor also supports a separately configured deployment script.
+
+The human decides which state to release and which version to assign.
+Automation performs the ceremony and leaves logs attached to the conversation.
+That evidence helps answer practical questions: who requested the release, what ran, what failed, and which commit corresponds to the published version?
+
+A fresh container removes accidental local state.
+Reproducibility also requires controlled inputs: pinned tool versions, resolved dependencies, and explicit configuration.
+Secrets belong outside the source code and should be supplied only where needed.
+
+This is how release automation supports quality and speed together: fewer manual steps, fewer hidden prerequisites, and less dependence on the one person whose laptop can publish.
+The same properties can be built with other CI/CD tools; Rultor makes the ChatOps approach tangible.
+
 Production still needs observability, controlled rollout, and a recovery strategy.
 Tests cannot predict every interaction with real traffic, data, and external services.
 
@@ -228,13 +268,23 @@ For each significant item, capture:
 
 This makes prioritization possible without pretending that every code smell has an exact financial value.
 
-Dependency update automation can reduce the manual effort of keeping libraries current.
-Small, frequent updates are easier to assess than an occasional migration across many versions.
-But every update still needs appropriate verification; an automated pull request is a proposal for change.
+[Renovate](https://docs.renovatebot.com/) and [Dependabot](https://docs.github.com/en/code-security/concepts/supply-chain-security/dependabot-version-updates) automate dependency update proposals.
+They open pull requests that make outdated dependencies visible and bring maintenance into the team's normal review workflow.
+I use Renovate on my open-source projects.
+Dependabot is another valid option; the choice depends on the project's stack.
 
-Static analysis can reveal useful problems.
-Coverage can reveal untested areas.
-Neither provides a complete measure of quality, and a tool's remediation estimate is not a reliable delivery forecast.
+Small, frequent updates are easier to assess than an occasional migration across many versions.
+Each proposal should pass the same quality gates as other changes: compilation, tests, static analysis, and the relevant architecture and security checks.
+Choose a schedule and grouping strategy that the team can sustain. Automation should reduce maintenance friction rather than create an unmanageable review queue.
+
+[SonarQube](https://docs.sonarsource.com/sonarqube-server/2025.4/user-guide/code-metrics/metrics-definition) makes another part of technical debt visible through static analysis.
+It reports maintainability issues and estimates the effort required to remediate them.
+Its technical debt measure sums those remediation estimates, giving teams a starting point for sizing cleanup work and tracking progress.
+Integrated into CI/CD, it can also enforce agreed quality gates, including coverage conditions.
+
+Those estimates help make debt actionable, but still need context: a rule-based estimate does not capture every architectural constraint or the full cost of a change.
+I would combine SonarQube's findings with the team's knowledge of the affected code and product priorities before committing to a repayment plan.
+Coverage and static analysis provide useful signals; meaningful tests and human review establish what those signals mean for the product.
 
 AI-assisted changes deserve the same scrutiny.
 Generating a patch faster does not establish that its behavior, compatibility, or design is correct.
