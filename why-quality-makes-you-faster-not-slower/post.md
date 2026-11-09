@@ -120,6 +120,14 @@ Use the findings to investigate constraints with the team.
 Ranking individuals or imposing deployment quotas would change the incentives without necessarily improving delivery.
 And keep asking whether the product is useful.
 
+## Adapt quickly in a changing world
+
+VUCA (volatile, uncertain, complex, ambiguous) and BANI (brittle, anxious, nonlinear, incomprehensible) are lenses for describing uncertainty ([BANI framework](https://medium.com/@cascio/facing-the-age-of-chaos-b00687b1f51d)).
+[DORA's guidance](https://dora.dev/guides/dora-metrics/) and *Accelerate* point toward the same response: build fast feedback loops and reliable delivery so teams can adapt without trading stability for speed.
+
+Can the team detect a mistaken assumption quickly, change direction without rebuilding everything, and raise risks before they become incidents?
+Developers and leaders both shape the conditions that make this possible.
+
 ## Use a real bug to introduce test-first development
 
 I like introducing automated testing through a defect the team already wants to fix:
@@ -356,38 +364,6 @@ Verification capacity matters as much as generation speed.
 
 I would address nearby debt as part of feature work when practical, and plan larger improvements against explicit product risks.
 Waiting for a mythical cleanup phase makes repayment unlikely.
-
-## Adaptation requires engineering and leadership
-
-VUCA describes a world that is **volatile, uncertain, complex, and ambiguous**: conditions change, predictions are limited, dependencies interact, and situations admit several interpretations.
-
-Jamais Cascio's [BANI framework](https://medium.com/@cascio/facing-the-age-of-chaos-b00687b1f51d) offers another lens: **brittle, anxious, nonlinear, and incomprehensible**.
-Systems may fail abruptly, uncertainty can paralyze decisions, effects can be disproportionate to causes, and more information may still leave us struggling to understand events.
-
-These are ways of framing uncertainty.
-I would not treat BANI as a scientifically established replacement for VUCA.
-For engineering teams, their value lies in the questions they prompt.
-
-Can we detect a mistaken assumption quickly?
-Can we change direction without rebuilding everything?
-Can someone raise a risk before it becomes an incident?
-
-As responsibility grows, quality becomes a matter of shaping the conditions in which people work:
-
-- **Developers** make behavior explicit through tests and keep changes understandable.
-- **Tech leads** share reasoning, coach through pairing, and help the team own its standards.
-- **Architects** reduce unnecessary coupling and make consequential trade-offs explicit.
-- **Technical managers** protect improvement capacity, remove recurring obstacles, and support learning without blame.
-
-A team needs room to say that a test is unreliable, a deadline is unrealistic, or a decision has stopped working.
-Punishing those signals delays feedback precisely when we need it most.
-
-Continuous improvement can be modest and concrete.
-Choose one recurring source of friction, agree on a small intervention, assign an owner, and inspect the result at the next retrospective.
-
-If reviews are the bottleneck, adding more tests may not help.
-If production incidents consume the week, faster code generation may simply feed more work into an unstable system.
-Follow the constraint.
 
 ## What quality does not promise
 
