@@ -88,6 +88,41 @@ What feedback would have helped earlier?
 
 That gives stakeholders something concrete to weigh against the next investment in prevention.
 
+## What Accelerate changed for me
+
+When I read *Accelerate* by Nicole Forsgren, Jez Humble, and Gene Kim in 2018, I wanted evidence to support the case for agile and DevOps practices.
+It helped turn convictions into a more testable argument.
+
+The research challenged the assumption that faster delivery necessarily means lower stability. Its findings support investing in capabilities that improve both. [DORA's current guidance](https://dora.dev/guides/dora-metrics/) retains that central conclusion.
+
+The four historical measures associated with *Accelerate* were:
+
+- **Deployment frequency:** how often changes reach production.
+- **Lead time for changes:** time from a code commit to successful production deployment.
+- **Time to restore service:** time to restore service after a failure or degradation.
+- **Change failure rate:** proportion of production changes that cause failure and require remediation.
+
+These definitions have evolved. DORA now uses five measures, adding deployment rework rate and narrowing recovery measurement to failed deployments.
+Rework rate tracks the share of deployments prompted by production incidents.
+DORA documents these changes in its [metrics history](https://dora.dev/insights/dora-metrics-history/).
+
+I read this evidence as a reason to improve the delivery system.
+It does not mean that deploying more often will, by itself, cause better quality, or that every local speed–risk trade-off disappears.
+
+The mechanism makes sense to me: small changes are easier to understand and diagnose, and useful tests catch mistakes.
+Repeatable deployments reduce manual variation.
+Observability helps us detect and recover from failures.
+
+Those practices reinforce one another.
+A decoupled architecture can reduce coordination, but introducing microservices without the ability to operate them may create more friction than it removes.
+
+Measure one application's trends in context.
+Use the findings to investigate constraints with the team.
+Ranking individuals or imposing deployment quotas would change the incentives without necessarily improving delivery.
+
+And keep asking whether the product is useful.
+Delivery performance measures how effectively changes reach production; it cannot tell us whether we chose the right changes.
+
 ## Use a real bug to introduce test-first development
 
 I like introducing automated testing through a defect the team already wants to fix:
@@ -362,41 +397,6 @@ Verification capacity matters as much as generation speed.
 
 I would address nearby debt as part of feature work when practical, and plan larger improvements against explicit product risks.
 Waiting for a mythical cleanup phase makes repayment unlikely.
-
-## What Accelerate changed for me
-
-When I read *Accelerate* by Nicole Forsgren, Jez Humble, and Gene Kim in 2018, I wanted evidence to support the case for agile and DevOps practices.
-It helped turn convictions into a more testable argument.
-
-The research challenged the assumption that faster delivery necessarily means lower stability. Its findings support investing in capabilities that improve both. [DORA's current guidance](https://dora.dev/guides/dora-metrics/) retains that central conclusion.
-
-The four historical measures associated with *Accelerate* were:
-
-- **Deployment frequency:** how often changes reach production.
-- **Lead time for changes:** time from a code commit to successful production deployment.
-- **Time to restore service:** time to restore service after a failure or degradation.
-- **Change failure rate:** proportion of production changes that cause failure and require remediation.
-
-These definitions have evolved. DORA now uses five measures, adding deployment rework rate and narrowing recovery measurement to failed deployments.
-Rework rate tracks the share of deployments prompted by production incidents.
-DORA documents these changes in its [metrics history](https://dora.dev/insights/dora-metrics-history/).
-
-I read this evidence as a reason to improve the delivery system.
-It does not mean that deploying more often will, by itself, cause better quality, or that every local speed–risk trade-off disappears.
-
-The mechanism makes sense to me: small changes are easier to understand and diagnose, and useful tests catch mistakes.
-Repeatable deployments reduce manual variation.
-Observability helps us detect and recover from failures.
-
-Those practices reinforce one another.
-A decoupled architecture can reduce coordination, but introducing microservices without the ability to operate them may create more friction than it removes.
-
-Measure one application's trends in context.
-Use the findings to investigate constraints with the team.
-Ranking individuals or imposing deployment quotas would change the incentives without necessarily improving delivery.
-
-And keep asking whether the product is useful.
-Delivery performance measures how effectively changes reach production; it cannot tell us whether we chose the right changes.
 
 ## Adaptation requires engineering and leadership
 
