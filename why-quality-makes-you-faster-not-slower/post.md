@@ -323,47 +323,10 @@ Repeating a mechanical procedure rarely does. Removing that repetition gives the
 
 ## Manage technical debt through its consequences
 
-Technical debt can appear even when a team makes sensible decisions.
-We learn more about the domain, dependencies age, and yesterday's architecture may no longer fit today's constraints.
-
-Some debt is deliberate: accepting a bounded shortcut to test an assumption can be reasonable.
-The decision needs an owner, visible consequences, and a condition for revisiting it.
-
-The useful question is rarely "how much debt do we have?" in the abstract.
-It is "which debt is making the next important change slower or riskier?"
-
-For each significant item, capture:
-
-- The friction or failure risk it creates, with a recent example.
-- The product work it affects and the likely consequence of waiting.
-- The smallest useful improvement, its owner, and a review date.
-
-This makes prioritization possible without pretending that every code smell has an exact financial value.
-
-[Renovate](https://docs.renovatebot.com/) and [Dependabot](https://docs.github.com/en/code-security/concepts/supply-chain-security/dependabot-version-updates) automate dependency update proposals.
-They open pull requests that make outdated dependencies visible and bring maintenance into the team's normal review workflow.
-I use Renovate on my open-source projects.
-Dependabot is another valid option; the choice depends on the project's stack.
-
-Small, frequent updates are easier to assess than an occasional migration across many versions.
-Each proposal should pass the same quality gates as other changes: compilation, tests, static analysis, and the relevant architecture and security checks.
-Choose a schedule and grouping strategy that the team can sustain. Automation should reduce maintenance friction rather than create an unmanageable review queue.
-
-[SonarQube](https://docs.sonarsource.com/sonarqube-server/user-guide/code-metrics/metrics-definition) makes another part of technical debt visible through static analysis.
-It reports maintainability issues and estimates the effort required to remediate them.
-Its technical debt measure sums those remediation estimates, giving teams a starting point for sizing cleanup work and tracking progress.
-Integrated into CI/CD, it can also enforce agreed quality gates, including coverage conditions.
-
-Those estimates help make debt actionable, but still need context: a rule-based estimate does not capture every architectural constraint or the full cost of a change.
-I would combine SonarQube's findings with the team's knowledge of the affected code and product priorities before committing to a repayment plan.
-Coverage and static analysis provide useful signals; meaningful tests and human review establish what those signals mean for the product.
-
-AI-assisted changes deserve the same scrutiny.
-Generating a patch faster does not establish that its behavior, compatibility, or design is correct.
-Verification capacity matters as much as generation speed.
-
-I would address nearby debt as part of feature work when practical, and plan larger improvements against explicit product risks.
-Waiting for a mythical cleanup phase makes repayment unlikely.
+Technical debt matters to speed when it makes an important change slower or riskier.
+Prioritize it by concrete friction and likely rework, not abstract code smells or static-analysis estimates.
+Tools such as [Renovate](https://docs.renovatebot.com/), [Dependabot](https://docs.github.com/en/code-security/concepts/supply-chain-security/dependabot-version-updates), and [SonarQube](https://docs.sonarsource.com/sonarqube-server/user-guide/code-metrics/metrics-definition) can surface candidates, but product context should drive repayment.
+Address nearby debt with feature work, and plan larger improvements against explicit product risks.
 
 ## What quality does not promise
 
