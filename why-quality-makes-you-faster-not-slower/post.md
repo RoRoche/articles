@@ -160,7 +160,7 @@ If every refactoring requires rewriting dozens of mocks, I would question what t
 
 ## Challenge the tests themselves
 
-This is the theme of my [mutation testing talk at Clermont'ech](https://www.clermontech.org/talks/api-hour-72/romain-rochegude-mutation-testing-quand-vos-tests-sont-mis-a-lepreuve.html).
+This is the theme of my [mutation testing talk at Clermont'ech (in French)](https://www.clermontech.org/talks/api-hour-72/romain-rochegude-mutation-testing-quand-vos-tests-sont-mis-a-lepreuve.html).
 Executing code and checking its behavior are different things.
 
 Suppose a rule accepts strictly positive numbers:
@@ -180,6 +180,7 @@ A test of the boundary value `0` can.
 
 Mutation testing deliberately introduces changes like this and checks whether the tests detect them.
 A surviving mutant gives us a question to investigate: is an assertion missing, or is the changed behavior irrelevant?
+Tools include [PIT](https://pitest.org/) for Java, [Stryker](https://stryker-mutator.io/) for JavaScript and .NET, and [Infection](https://infection.github.io/) for PHP.
 
 This is not a demand for a perfect mutation score.
 Some mutants preserve behavior, and repeated test execution can be expensive.
