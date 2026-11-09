@@ -78,9 +78,13 @@ Eric Elliott explores this broader cost in [The Outrageous Cost of Skipping TDD 
 His discussion highlights interruptions, context switching, and handoffs: a production defect can disrupt work well beyond the fix itself.
 His January 2019 update also acknowledges that the widely repeated 100× repair-cost claim lacks a reliable basis.
 
-To make the case in your own team, examine recent incidents.
-How much time went into finding the cause, restoring service, handling support, and repairing the consequences?
-What feedback would have helped earlier?
+On a web platform I worked on, a bug in the notification workflow reached production.
+One person spent at least two days maintaining a workaround while the issue was reproduced.
+A developer needed a few hours to correct the code; QA spent several hours validating the fix, and Ops spent several more deploying it.
+The response spanned several roles and days, far beyond the time needed to write the fix.
+
+Trace incidents in your own team across diagnosis, support, workaround, validation, and redeployment.
+What earlier feedback could have shortened that path?
 
 That gives stakeholders something concrete to weigh against the next investment in prevention.
 
