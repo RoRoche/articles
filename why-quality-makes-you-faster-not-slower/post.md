@@ -279,43 +279,9 @@ A permanently red pipeline eventually loses its meaning.
 
 ### Make releases repeatable with ChatOps and Rultor
 
-A release script still depends on a developer's machine if it uses their local JDK, cached dependencies, working tree, and undeclared configuration.
-Automating the commands is one step; controlling the environment makes the process repeatable.
+For my Java libraries, [Rultor](https://www.rultor.com/) is a ChatOps bot that runs the release script in an isolated environment, including signing and publishing artifacts to Maven Central. Its [release documentation](https://doc.rultor.com/basics.html#release) explains the workflow.
 
-**ChatOps brings operational commands into the project's conversation**, where the request, execution, and result are visible to the team.
-[Rultor](https://www.rultor.com/) applies this approach to merge, release, and deployment operations through GitHub comments.
-For example, an authorized collaborator can request a release with:
-
-```text
-@rultor release, tag is `1.4.0`
-```
-
-Rultor executes the workflow defined in the repository's `.rultor.yml`.
-Its [Docker configuration](https://doc.rultor.com/reference.html#docker-image) defines the build environment, keeping execution separate from a developer's laptop.
-The release starts in a fresh, isolated container, with the required toolchain and explicitly supplied configuration.
-The environment is disposable: leftover files from a previous local build should never be an undeclared input to publication.
-
-For my Java libraries, the intended flow is concrete:
-
-1. Check out the source state selected for release.
-2. Prepare the requested version through the versioned release script.
-3. Build and run the required quality checks in the isolated environment.
-4. Sign and publish the resulting artifacts to Maven Central using explicitly supplied credentials.
-5. Have Rultor tag the resulting release commit and push the tag after the script succeeds.
-
-Rultor's [release documentation](https://doc.rultor.com/basics.html#release) describes this division of responsibilities between the project's script and the bot.
-Publishing a library and deploying an application are distinct operations; Rultor also supports a separately configured deployment script.
-
-The human decides which state to release and which version to assign.
-Automation performs the ceremony and leaves logs attached to the conversation.
-That evidence helps answer practical questions: who requested the release, what ran, what failed, and which commit corresponds to the published version?
-
-A fresh container removes accidental local state.
-Reproducibility also requires controlled inputs: pinned tool versions, resolved dependencies, and explicit configuration.
-Secrets belong outside the source code and should be supplied only where needed.
-
-This is how release automation supports quality and speed together: fewer manual steps, fewer hidden prerequisites, and less dependence on the one person whose laptop can publish.
-The same properties can be built with other CI/CD tools; Rultor makes the ChatOps approach tangible.
+The broader lesson is tool-independent: make release inputs explicit, keep credentials out of source, and preserve a visible execution log.
 
 Production still needs observability, controlled rollout, and a recovery strategy.
 Tests cannot predict every interaction with real traffic, data, and external services.
