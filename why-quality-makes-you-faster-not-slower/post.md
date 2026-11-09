@@ -1,5 +1,5 @@
 ---
-title: "Why Quality Makes You Faster, Not Slower"
+title: "When Quality Makes You Faster"
 description: "How meaningful tests, shared ownership, and technical leadership reduce rework and make fast, reliable delivery sustainable."
 tags: ["Software Development", "Software Engineering", "Test Driven Development", "DevOps", "Technical Leadership"]
 status: draft
