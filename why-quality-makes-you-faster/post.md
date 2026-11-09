@@ -4,7 +4,7 @@ description: "How meaningful tests, shared ownership, and technical leadership r
 tags: ["Software Development", "Software Engineering", "Test Driven Development", "DevOps", "Technical Leadership"]
 status: draft
 category: software-engineering
-slug: why-quality-makes-you-faster-not-slower
+slug: why-quality-makes-you-faster
 image: header.png
 published_at: null
 dev_to_url: null
