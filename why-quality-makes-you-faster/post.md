@@ -281,7 +281,7 @@ A permanently red pipeline eventually loses its meaning.
 
 ### Make releases repeatable with ChatOps and Rultor
 
-For my Java libraries, [Rultor](https://www.rultor.com/) is a ChatOps bot that runs the release script in an isolated environment, including signing and publishing artifacts to Maven Central. Its [release documentation](https://doc.rultor.com/basics.html#release) explains the workflow.
+For my Java libraries, [Rultor](https://www.rultor.com/) is a ChatOps bot that runs the release script in an isolated environment, including signing and publishing artifacts to Maven Central. Its [release documentation](https://doc.rultor.com/basics.html#release) explains the workflow, and its [GitHub page](https://github.com/yegor256/rultor) links to many blog posts and videos to help newcomers get started.
 
 The broader lesson is tool-independent: make release inputs explicit, keep credentials out of source, and preserve a visible execution log.
 
