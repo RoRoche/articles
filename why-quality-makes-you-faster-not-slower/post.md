@@ -70,9 +70,6 @@ A useful historical reference is RTI's [2002 report for NIST](https://www.nist.g
 Section 5 models repair costs according to where defects originate and where they are detected.
 It also separates developer costs from losses borne by users.
 
-One important caveat: the multipliers in Tables 5-1 and 5-2 are explicitly illustrative.
-They are not a universal law that every production bug costs thirty or one hundred times more to fix.
-
 The mechanism is more useful than a dramatic number.
 An error found locally may need a code change.
 The same error in production may also require diagnosis, a patch, support, and data repair.
@@ -80,7 +77,6 @@ The same error in production may also require diagnosis, a patch, support, and d
 Eric Elliott explores this broader cost in [The Outrageous Cost of Skipping TDD & Code Reviews](https://medium.com/javascript-scene/the-outrageous-cost-of-skipping-tdd-code-reviews-57887064c412).
 His discussion highlights interruptions, context switching, and handoffs: a production defect can disrupt work well beyond the fix itself.
 His January 2019 update also acknowledges that the widely repeated 100× repair-cost claim lacks a reliable basis.
-I take the article as an argument for examining the full cost of rework, rather than as proof of a universal return on investment.
 
 To make the case in your own team, examine recent incidents.
 How much time went into finding the cause, restoring service, handling support, and repairing the consequences?
@@ -107,7 +103,6 @@ Rework rate tracks the share of deployments prompted by production incidents.
 DORA documents these changes in its [metrics history](https://dora.dev/insights/dora-metrics-history/).
 
 I read this evidence as a reason to improve the delivery system.
-It does not mean that deploying more often will, by itself, cause better quality, or that every local speed–risk trade-off disappears.
 
 The mechanism makes sense to me: small changes are easier to understand and diagnose, and useful tests catch mistakes.
 Repeatable deployments reduce manual variation.
@@ -119,9 +114,7 @@ A decoupled architecture can reduce coordination, but introducing microservices 
 Measure one application's trends in context.
 Use the findings to investigate constraints with the team.
 Ranking individuals or imposing deployment quotas would change the incentives without necessarily improving delivery.
-
 And keep asking whether the product is useful.
-Delivery performance measures how effectively changes reach production; it cannot tell us whether we chose the right changes.
 
 ## Use a real bug to introduce test-first development
 
@@ -148,8 +141,6 @@ Which dependencies are essential?
 Can I express this rule without starting the entire application?
 
 Those questions can encourage cohesive responsibilities, loose coupling, and composition.
-They do not guarantee them.
-It is possible to write brittle tests around a poorly designed system while following the TDD cycle.
 
 I favor small fakes when they make a dependency's behavior clear.
 But a fake database does not establish that real SQL, transactions, or constraints work.
@@ -182,8 +173,6 @@ Mutation testing deliberately introduces changes like this and checks whether th
 A surviving mutant gives us a question to investigate: is an assertion missing, or is the changed behavior irrelevant?
 Tools include [PIT](https://pitest.org/) for Java, [Stryker](https://stryker-mutator.io/) for JavaScript and .NET, and [Infection](https://infection.github.io/) for PHP.
 
-This is not a demand for a perfect mutation score.
-Some mutants preserve behavior, and repeated test execution can be expensive.
 I would start with important business rules and use the findings to improve assertions.
 
 The practical question is: **would our tests notice if this behavior became wrong?**
@@ -296,8 +285,7 @@ Rework is not the only hidden cost.
 Searching for a command, reconstructing test setup, or deciphering a silent CI job also consumes attention.
 These irritations can become so familiar that the team stops questioning them.
 
-Consider an illustrative calculation: two minutes lost, ten times a day, across ten developers and 220 working days amounts to about **733 hours a year**.
-That is arithmetic based on assumed repetition, not measured savings or capacity we can automatically recover.
+For example, two minutes lost, ten times a day, across ten developers and 220 working days amounts to about **733 hours a year**.
 It is a reason to investigate frequent small costs alongside spectacular bottlenecks.
 
 The first fix may be simple: use an existing test fixture, give a build command an obvious name, or improve an assertion's failure message.
@@ -396,6 +384,13 @@ Choose one recurring source of friction, agree on a small intervention, assign a
 If reviews are the bottleneck, adding more tests may not help.
 If production incidents consume the week, faster code generation may simply feed more work into an unstable system.
 Follow the constraint.
+
+## What quality does not promise
+
+Quality does not guarantee that every verification investment pays for itself, that TDD produces a good design, or that deploying more often alone causes better quality or removes every trade-off.
+The NIST repair-cost multipliers are illustrative, not universal; the 733-hour friction estimate is based on assumed repetition, not measured savings.
+Some mutants preserve behavior, and mutation testing can be expensive, so treat its score as a signal rather than a target.
+Delivery metrics show how changes reach production, not whether they were the right changes for users.
 
 ## Put the claim to work
 
