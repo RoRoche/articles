@@ -337,7 +337,7 @@ Small, frequent updates are easier to assess than an occasional migration across
 Each proposal should pass the same quality gates as other changes: compilation, tests, static analysis, and the relevant architecture and security checks.
 Choose a schedule and grouping strategy that the team can sustain. Automation should reduce maintenance friction rather than create an unmanageable review queue.
 
-[SonarQube](https://docs.sonarsource.com/sonarqube-server/2025.4/user-guide/code-metrics/metrics-definition) makes another part of technical debt visible through static analysis.
+[SonarQube](https://docs.sonarsource.com/sonarqube-server/user-guide/code-metrics/metrics-definition) makes another part of technical debt visible through static analysis.
 It reports maintainability issues and estimates the effort required to remediate them.
 Its technical debt measure sums those remediation estimates, giving teams a starting point for sizing cleanup work and tracking progress.
 Integrated into CI/CD, it can also enforce agreed quality gates, including coverage conditions.
